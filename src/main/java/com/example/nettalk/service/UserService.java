@@ -21,4 +21,13 @@ public class UserService {
     public UserEntity insert(UserEntity userEntity) {
         return userRepository.save(userEntity);
     }
+
+    public boolean checkEmailDuplicate(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
+    public boolean checkUseridDuplicate(String userid) {
+        return userRepository.existsByUserid(userid);
+    }
+
 }
