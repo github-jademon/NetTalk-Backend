@@ -4,11 +4,13 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Entity
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 @Table(name="users")
 public class UserEntity {
     @Id
@@ -17,9 +19,4 @@ public class UserEntity {
     private String email;
     private String userid;
     private String password;
-
-
-    public UserEntity() {
-
-    }
 }

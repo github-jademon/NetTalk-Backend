@@ -2,6 +2,7 @@ package com.example.nettalk.response;
 
 public class ResponseMessage {
     public static final String BAD_REQUEST = "BAD_REQUEST";
+    public static final String  METHOD_NOT_ALLOWED = "Method Not Allowed";
     public static final String LOGIN_SUCCESS = "로그인 성공";
     public static final String LOGIN_FAIL = "로그인 실패";
     public static final String READ_USER = "회원 정보 조회 성공";
