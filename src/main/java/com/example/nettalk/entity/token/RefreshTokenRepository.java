@@ -1,6 +1,5 @@
-package com.example.nettalk.repository;
+package com.example.nettalk.entity.token;
 
-import com.example.nettalk.entity.RefreshToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

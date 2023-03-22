@@ -1,4 +1,4 @@
-package com.example.nettalk.response;
+package com.example.nettalk.vo.response;
 
 public class StatusCode {
     public static final int OK = 200;

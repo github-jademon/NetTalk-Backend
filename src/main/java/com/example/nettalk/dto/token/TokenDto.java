@@ -1,4 +1,4 @@
-package com.example.nettalk.dto;
+package com.example.nettalk.dto.token;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

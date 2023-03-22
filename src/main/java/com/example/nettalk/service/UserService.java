@@ -1,6 +1,6 @@
 package com.example.nettalk.service;
-import com.example.nettalk.dto.UserResponseDto;
-import com.example.nettalk.repository.UserRepository;
+import com.example.nettalk.dto.member.MemberResponseDto;
+import com.example.nettalk.entity.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,23 +9,23 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class UserService {
-    private final UserRepository userRepository;
-    public UserResponseDto findUserInfoById(Long userId) {
-        return userRepository.findById(userId)
-                .map(UserResponseDto::of)
+    private final MemberRepository memberRepository;
+    public MemberResponseDto findMemberInfoById(Long userId) {
+        return memberRepository.findById(userId)
+                .map(MemberResponseDto::of)
                 .orElseThrow(() -> new RuntimeException("로그인 유저 정보가 없습니다."));
     }
 
-    public UserResponseDto findUserInfoByEmail(String email) {
-        return userRepository.findByEmail(email)
-                .map(UserResponseDto::of)
+    public MemberResponseDto findMemberInfoByEmail(String email) {
+        return memberRepository.findByEmail(email)
+                .map(MemberResponseDto::of)
                 .orElseThrow(() -> new RuntimeException("유저 정보가 없습니다."));
     }
-    public boolean checkEmailDuplicate(String email) {
-        return userRepository.existsByEmail(email);
-    }
-    public boolean checkUseridDuplicate(String userid) {
-        return userRepository.existsByUserid(userid);
+
+    public MemberResponseDto findMemberInfoByUserid(String userid) {
+        return memberRepository.findByUserid(userid)
+                .map(MemberResponseDto::of)
+                .orElseThrow(() -> new RuntimeException("유저 정보가 없습니다."));
     }
 
 }

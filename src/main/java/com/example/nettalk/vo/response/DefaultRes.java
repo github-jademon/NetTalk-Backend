@@ -1,4 +1,4 @@
-package com.example.nettalk.response;
+package com.example.nettalk.vo.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

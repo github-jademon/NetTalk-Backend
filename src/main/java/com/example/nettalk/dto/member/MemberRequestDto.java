@@ -1,7 +1,7 @@
-package com.example.nettalk.dto;
+package com.example.nettalk.dto.member;
 
-import com.example.nettalk.entity.Authority;
-import com.example.nettalk.entity.UserEntity;
+import com.example.nettalk.entity.authority.Authority;
+import com.example.nettalk.entity.member.Member;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,14 +11,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserRequestDto {
+public class MemberRequestDto {
 
     private String email;
     private String password;
     private String userid;
 
-    public UserEntity toMember(PasswordEncoder passwordEncoder) {
-        return UserEntity.builder()
+    public Member toMember(PasswordEncoder passwordEncoder) {
+        return Member.builder()
                 .email(email)
                 .password(passwordEncoder.encode(password))
                 .userid(userid)

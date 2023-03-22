@@ -1,7 +1,7 @@
 package com.example.nettalk.service;
 
-import com.example.nettalk.entity.UserEntity;
-import com.example.nettalk.repository.UserRepository;
+import com.example.nettalk.entity.member.Member;
+import com.example.nettalk.entity.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
@@ -13,26 +13,25 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
-import java.util.Optional;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
 
-    private UserDetails createUserDetails(UserEntity userEntity) {
+    private UserDetails createUserDetails(Member member) {
         try {
-            System.out.println(userEntity.getEmail());
-            System.out.println(userEntity.getPassword());
+            System.out.println(member.getEmail());
+            System.out.println(member.getPassword());
 
-            GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(userEntity.getAuthority().toString());
+            GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(member.getAuthority().toString());
 
             System.out.println("0000"+grantedAuthority);
 
             User user = new User(
-                    String.valueOf(userEntity.getId()),
-                    userEntity.getPassword(),
+                    String.valueOf(member.getId()),
+                    member.getPassword(),
                     Collections.singleton(grantedAuthority)
             );
 
@@ -49,7 +48,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         System.out.println("!!!!!!!!!!"+username);
-        return userRepository.findByEmail(username)
+        return memberRepository.findByEmail(username)
                 .map(this::createUserDetails)
                 .orElseThrow(()->new UsernameNotFoundException("Username not found '"+ username + "'"));
     }

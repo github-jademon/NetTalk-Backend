@@ -1,4 +1,4 @@
-package com.example.nettalk.entity;
+package com.example.nettalk.entity.token;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

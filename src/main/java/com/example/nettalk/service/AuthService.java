@@ -1,14 +1,14 @@
 package com.example.nettalk.service;
 
-import com.example.nettalk.dto.TokenDto;
-import com.example.nettalk.dto.TokenRequestDto;
-import com.example.nettalk.dto.UserRequestDto;
-import com.example.nettalk.dto.UserResponseDto;
-import com.example.nettalk.entity.RefreshToken;
-import com.example.nettalk.entity.UserEntity;
+import com.example.nettalk.dto.token.TokenDto;
+import com.example.nettalk.dto.token.TokenRequestDto;
+import com.example.nettalk.dto.member.MemberRequestDto;
+import com.example.nettalk.dto.member.MemberResponseDto;
+import com.example.nettalk.entity.token.RefreshToken;
+import com.example.nettalk.entity.member.Member;
 import com.example.nettalk.jwt.TokenProvider;
-import com.example.nettalk.repository.RefreshTokenRepository;
-import com.example.nettalk.repository.UserRepository;
+import com.example.nettalk.entity.token.RefreshTokenRepository;
+import com.example.nettalk.entity.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -17,50 +17,49 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
+
 @Service
 @RequiredArgsConstructor
 public class AuthService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
+    public final static HashMap<String, Object> data = new HashMap<>();
+
+
 
     @Transactional
-    public UserResponseDto signup(UserRequestDto userRequestDto) {
-        if(userRepository.existsByEmail(userRequestDto.getEmail())) {
-            throw new RuntimeException("이미 가입되어 있는 유저입니다");
-        }
+    public MemberResponseDto signup(MemberRequestDto memberRequestDto) {
+        try {
+            System.out.println("1");
+            if(memberRepository.findByEmail(memberRequestDto.getEmail()).isPresent()) {
+                throw new RuntimeException("이미 가입되어 있는 유저입니다");
+            }
+            System.out.println("2");
 
-        UserEntity user = userRequestDto.toMember(passwordEncoder);
-        return UserResponseDto.of(userRepository.save(user));
+            Member user = memberRequestDto.toMember(passwordEncoder);
+            return MemberResponseDto.of(memberRepository.save(user));
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @Transactional
-    public TokenDto login(UserRequestDto userRequestDto) {
-        System.out.println("1111");
-
-        UsernamePasswordAuthenticationToken authenticationToken = userRequestDto.toAuthentication();
-
-        System.out.println("2222");
-        System.out.println(authenticationToken);
+    public TokenDto login(MemberRequestDto memberRequestDto) {
+        UsernamePasswordAuthenticationToken authenticationToken = memberRequestDto.toAuthentication();
 
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
-        System.out.println("3333");
-        System.out.println(authentication);
-
         TokenDto tokenDto = tokenProvider.generateTokenDto(authentication);
-
-        System.out.println("4444");
-        System.out.println(tokenDto);
 
         RefreshToken refreshToken = RefreshToken.builder()
                 .key(authentication.getName())
                 .value(tokenDto.getRefreshToken())
                 .build();
-
-        System.out.println(refreshToken);
 
         refreshTokenRepository.save(refreshToken);
 

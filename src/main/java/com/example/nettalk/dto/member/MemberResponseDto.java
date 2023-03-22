@@ -1,6 +1,6 @@
-package com.example.nettalk.dto;
+package com.example.nettalk.dto.member;
 
-import com.example.nettalk.entity.UserEntity;
+import com.example.nettalk.entity.member.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,12 +10,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UserResponseDto {
+public class MemberResponseDto {
     private String email;
     private String userid;
 
-    public static UserResponseDto of(UserEntity user) {
-        return new UserResponseDto().builder()
+    public static MemberResponseDto of(Member user) {
+        return new MemberResponseDto().builder()
                 .email(user.getEmail())
                 .userid(user.getUserid())
                 .build();

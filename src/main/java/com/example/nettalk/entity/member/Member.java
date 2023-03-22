@@ -1,5 +1,6 @@
-package com.example.nettalk.entity;
+package com.example.nettalk.entity.member;
 
+import com.example.nettalk.entity.authority.Authority;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -7,7 +8,7 @@ import lombok.*;
 @Entity
 @NoArgsConstructor
 @Table(name="users")
-public class UserEntity {
+public class Member {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,7 +23,7 @@ public class UserEntity {
     private Authority authority;
 
     @Builder
-    public UserEntity(String email, String userid, String password, Authority authority) {
+    public Member(String email, String userid, String password, Authority authority) {
         this.email = email;
         this.userid = userid;
         this.password = password;

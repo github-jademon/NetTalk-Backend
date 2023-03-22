@@ -1,4 +1,4 @@
-package com.example.nettalk.response;
+package com.example.nettalk.vo.response;
 
 public class ResponseMessage {
     public static final String BAD_REQUEST = "BAD_REQUEST";

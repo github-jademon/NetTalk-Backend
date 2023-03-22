@@ -1,6 +1,6 @@
 package com.example.nettalk.jwt;
 
-import com.example.nettalk.dto.TokenDto;
+import com.example.nettalk.dto.token.TokenDto;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;

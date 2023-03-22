@@ -1,13 +1,22 @@
 package com.example.nettalk.controller;
 
-import com.example.nettalk.dto.TokenDto;
-import com.example.nettalk.dto.TokenRequestDto;
-import com.example.nettalk.dto.UserRequestDto;
-import com.example.nettalk.dto.UserResponseDto;
+import com.example.nettalk.dto.token.TokenDto;
+import com.example.nettalk.dto.token.TokenRequestDto;
+import com.example.nettalk.dto.member.MemberRequestDto;
+import com.example.nettalk.dto.member.MemberResponseDto;
+import com.example.nettalk.vo.response.DefaultRes;
+import com.example.nettalk.vo.response.ResponseMessage;
+import com.example.nettalk.vo.response.StatusCode;
 import com.example.nettalk.service.AuthService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.nio.charset.Charset;
+import java.util.HashMap;
 
 @RestController
 @RequestMapping("/auth")
@@ -17,13 +26,27 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/signup")
-    public ResponseEntity<UserResponseDto> signup(@RequestBody UserRequestDto userRequestDto) {
-        return ResponseEntity.ok(authService.signup(userRequestDto));
+    public ResponseEntity<MemberResponseDto> signup(@RequestBody MemberRequestDto memberRequestDto) {
+
+
+        return ResponseEntity.ok(authService.signup(memberRequestDto));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<TokenDto> login(@RequestBody UserRequestDto userRequestDto) {
-        return ResponseEntity.ok(authService.login(userRequestDto));
+    public ResponseEntity login(@RequestBody MemberRequestDto memberRequestDto) {
+        try {
+            HttpHeaders headers= new HttpHeaders();
+            headers.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
+
+            authService.data.put("data", authService.login(memberRequestDto));
+
+            return new ResponseEntity(DefaultRes
+                    .res(StatusCode.OK, ResponseMessage.OK, authService.data), HttpStatus.OK);
+        } catch(Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(DefaultRes
+                    .res(StatusCode.INTERNAL_SERVER_ERROR, ResponseMessage.INTERNAL_SERVER_ERROR, authService.data), HttpStatus.OK);
+        }
     }
 
     @PostMapping("/reissue")
@@ -31,56 +54,4 @@ public class AuthController {
         return ResponseEntity.ok(authService.reissue(tokenRequestDto));
     }
 
-    // signup
-//    @PostMapping("/signup")
-//    public ResponseEntity signup(@RequestBody UserEntity user){
-//        try {
-//            HttpHeaders headers= new HttpHeaders();
-//            headers.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
-//
-//            // todo : requestbody user data test
-//            PasswordEncoder passwordEncoder = userService.getPasswordEncoder();
-//
-//            UserEntity userEntity = UserEntity.builder()
-//                    .email(user.getEmail())
-//                    .userid(user.getUserid())
-//                    .password(passwordEncoder.encode(user.getPassword()))
-//                    .build();
-//
-//            userService.insert(userEntity);
-//
-//            return new ResponseEntity(DefaultRes
-//                    .res(StatusCode.OK, ResponseMessage.OK), HttpStatus.OK);
-//        } catch(Exception e) {
-//            e.printStackTrace();
-//            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//    }
-//    @GetMapping("/exists")
-//    public ResponseEntity checkUserDataDuplicate(@RequestBody DuplicateVo user) {
-//        try {
-//            HttpHeaders headers= new HttpHeaders();
-//            headers.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
-//
-//            HashMap<String, Object> hashMap = new HashMap<String, Object>();
-//
-//            String type = user.getType();
-//            String data = user.getData();
-//
-//            if(type.equals("userid")) {
-//                hashMap.put("check", userService.checkUseridDuplicate(data));
-//            } else if (type.equals("email")) {
-//                hashMap.put("check", userService.checkEmailDuplicate(data));
-//            } else {
-//                return new ResponseEntity(DefaultRes
-//                        .res(StatusCode.METHOD_NOT_ALLOWED, ResponseMessage.METHOD_NOT_ALLOWED), HttpStatus.METHOD_NOT_ALLOWED);
-//            }
-//
-//            return new ResponseEntity(DefaultRes
-//                    .res(StatusCode.OK, ResponseMessage.OK, hashMap), HttpStatus.OK);
-//        } catch(Exception e) {
-//            e.printStackTrace();
-//            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//    }
 }

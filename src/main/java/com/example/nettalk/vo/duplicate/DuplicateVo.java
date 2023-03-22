@@ -1,4 +1,4 @@
-package com.example.nettalk.vo;
+package com.example.nettalk.vo.duplicate;
 
 import lombok.Data;
 

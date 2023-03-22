@@ -19,11 +19,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.stereotype.Component;
 
-//@EnableWebSecurity
-//@RequiredArgsConstructor
-//@Configuration(proxyBeanMethods = false)
-//@ConditionalOnDefaultWebSecurity
-//@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @RequiredArgsConstructor
 @Configuration
 @EnableWebSecurity
@@ -35,14 +30,6 @@ public class  WebSecurityConfig {
     private final CustomUserDetailsService customUserDetailsService;
 
     @Bean
-    public AuthenticationManager authManager(HttpSecurity http) throws Exception {
-        AuthenticationManagerBuilder auth =
-                http.getSharedObject(AuthenticationManagerBuilder.class);
-        auth.authenticationProvider(authenticationProvider());
-        return auth.build();
-    }
-    @Bean
-//    @Order(SecurityProperties.BASIC_AUTH_ORDER)
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .httpBasic().disable()
@@ -73,8 +60,16 @@ public class  WebSecurityConfig {
     }
 
     @Bean
+    public AuthenticationManager authManager(HttpSecurity http) throws Exception {
+        AuthenticationManagerBuilder auth =
+                http.getSharedObject(AuthenticationManagerBuilder.class);
+        auth.authenticationProvider(authenticationProvider());
+        return auth.build();
+    }
+
+    @Bean
     public AuthenticationProvider authenticationProvider() {
-        CustomAuthenticationProvider customAuthenticationProvider = new CustomAuthenticationProvider(passwordEncoder(), customUserDetailsService);
+        CustomAuthenticationProvider customAuthenticationProvider = new CustomAuthenticationProvider(passwordEncoder(), customUserDetailsService, "");
         return customAuthenticationProvider;
     }
 }
