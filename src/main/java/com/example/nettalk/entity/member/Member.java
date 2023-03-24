@@ -1,7 +1,7 @@
 package com.example.nettalk.entity.member;
 
 import com.example.nettalk.entity.authority.Authority;
-import jakarta.persistence.*;
+import javax.persistence.*;
 import lombok.*;
 
 @Getter

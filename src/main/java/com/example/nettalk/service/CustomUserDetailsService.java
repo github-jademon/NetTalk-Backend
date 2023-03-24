@@ -21,28 +21,29 @@ public class CustomUserDetailsService implements UserDetailsService {
     private final MemberRepository memberRepository;
 
     private UserDetails createUserDetails(Member member) {
-        try {
-            System.out.println(member.getEmail());
-            System.out.println(member.getPassword());
+//        try {
+//
+//        } catch(Exception e) {
+//            e.printStackTrace();
+//        }
+//        return null;
+        System.out.println(member.getEmail());
+        System.out.println(member.getPassword());
 
-            GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(member.getAuthority().toString());
+        GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(member.getAuthority().toString());
 
-            System.out.println("0000"+grantedAuthority);
+        System.out.println("0000"+grantedAuthority);
 
-            User user = new User(
-                    String.valueOf(member.getId()),
-                    member.getPassword(),
-                    Collections.singleton(grantedAuthority)
-            );
+        User user = new User(
+                String.valueOf(member.getId()),
+                member.getPassword(),
+                Collections.singleton(grantedAuthority)
+        );
 
-            System.out.println("1111"+user);
-            System.out.println("2222"+user.getPassword());
+        System.out.println("1111"+user);
+        System.out.println("2222"+user.getPassword());
 
-            return user;
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
-        return null;
+        return user;
     }
 
     @Override
