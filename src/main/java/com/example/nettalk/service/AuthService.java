@@ -29,20 +29,35 @@ public class AuthService {
     private final RefreshTokenRepository refreshTokenRepository;
     public final static HashMap<String, Object> data = new HashMap<>();
 
-
+    public boolean passwordck(String password, String passwordck) {
+        if(password.equals(passwordck)) {
+            return true;
+        }
+        return false;
+    }
 
     @Transactional
     public MemberResponseDto signup(MemberRequestDto memberRequestDto) {
+        String message = "";
         try {
             System.out.println("1");
             if(memberRepository.findByEmail(memberRequestDto.getEmail()).isPresent()) {
-                throw new RuntimeException("이미 가입되어 있는 유저입니다");
+                message = "이미 가입되어 있는 유저입니다";
+                throw new RuntimeException(message);
             }
             System.out.println("2");
+
+            if(passwordck(memberRequestDto.getPassword(), memberRequestDto.getPassword())) {
+                message = "비밀번호가 다릅니다";
+                throw new RuntimeException(message);
+            }
 
             Member user = memberRequestDto.toMember(passwordEncoder);
             return MemberResponseDto.of(memberRepository.save(user));
         } catch(Exception e) {
+            if(!message.equals("")) {
+                AuthService.data.put("message", message);
+            }
             e.printStackTrace();
         }
         return null;

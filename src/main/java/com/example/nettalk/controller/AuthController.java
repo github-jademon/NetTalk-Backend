@@ -26,10 +26,25 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/signup")
-    public ResponseEntity<MemberResponseDto> signup(@RequestBody MemberRequestDto memberRequestDto) {
+    public ResponseEntity signup(@RequestBody MemberRequestDto memberRequestDto) {
+        try {
 
+            HttpHeaders headers= new HttpHeaders();
+            headers.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
 
-        return ResponseEntity.ok(authService.signup(memberRequestDto));
+            authService.data.put("data", authService.signup(memberRequestDto));
+
+            if(authService.data.get("data")==null) {
+                throw new Exception();
+            }
+
+            return new ResponseEntity(DefaultRes
+                    .res(StatusCode.OK, ResponseMessage.OK, authService.data), HttpStatus.OK);
+        } catch(Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(DefaultRes
+                    .res(StatusCode.INTERNAL_SERVER_ERROR, ResponseMessage.INTERNAL_SERVER_ERROR, authService.data), HttpStatus.OK);
+        }
     }
 
     @PostMapping("/login")
