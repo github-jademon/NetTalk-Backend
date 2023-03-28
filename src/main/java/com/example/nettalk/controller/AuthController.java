@@ -37,19 +37,21 @@ public class AuthController {
                     String validKeyName = String.format("valid_%s", error.getField());
                     validatorResult.put(validKeyName, error.getDefaultMessage());
                 }
+
                 return new ResponseEntity(validatorResult, HttpStatus.OK);
+            } else {
+                HttpHeaders headers= new HttpHeaders();
+                headers.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
+
+                authService.data.put("data", authService.signup(memberRequestDto));
+
+                if(authService.data.get("data")==null) {
+                    throw new Exception();
+                }
+
+                return new ResponseEntity(DefaultRes
+                        .res(authService.res.getStatusCode(), authService.res.getResponseMessage(), authService.data), HttpStatus.OK);
             }
-            HttpHeaders headers= new HttpHeaders();
-            headers.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
-
-            authService.data.put("data", authService.signup(memberRequestDto));
-
-            if(authService.data.get("data")==null) {
-                throw new Exception();
-            }
-
-            return new ResponseEntity(DefaultRes
-                    .res(authService.res.getStatusCode(), authService.res.getResponseMessage(), authService.data), HttpStatus.OK);
         } catch(Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(DefaultRes
@@ -64,8 +66,7 @@ public class AuthController {
             headers.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
 
             authService.data.put("token", authService.login(memberRequestDto));
-//            authService.data.put("message", authService.message);
-//            new ResponseEntity<>()
+
             return new ResponseEntity(DefaultRes
                     .res(StatusCode.OK, authService.res.getResponseMessage(), authService.data), HttpStatus.OK);
         } catch(Exception e) {
