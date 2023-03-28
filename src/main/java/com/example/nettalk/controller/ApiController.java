@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,6 +25,18 @@ public class ApiController {
     public ResponseEntity LoadList() {
         try {
             List<Room> data = roomService.list();
+
+            return new ResponseEntity(data, HttpStatus.OK);
+        } catch(Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+    }
+
+    @GetMapping("/rooms/{id}")
+    public ResponseEntity LoadList(@PathVariable("id") Long id) {
+        try {
+            Optional<Room> data = roomService.getRoom(id);
 
             return new ResponseEntity(data, HttpStatus.OK);
         } catch(Exception e) {
