@@ -4,6 +4,7 @@ import com.example.nettalk.jwt.CustomAuthenticationProvider;
 import com.example.nettalk.jwt.JwtAccessDeniedHandler;
 import com.example.nettalk.jwt.JwtAuthenticationEntryPoint;
 import com.example.nettalk.jwt.TokenProvider;
+import com.example.nettalk.service.AuthService;
 import com.example.nettalk.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -69,7 +70,7 @@ public class  WebSecurityConfig {
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
-        CustomAuthenticationProvider customAuthenticationProvider = new CustomAuthenticationProvider(passwordEncoder(), customUserDetailsService, "");
+        CustomAuthenticationProvider customAuthenticationProvider = new CustomAuthenticationProvider(passwordEncoder(), customUserDetailsService);
         return customAuthenticationProvider;
     }
 }

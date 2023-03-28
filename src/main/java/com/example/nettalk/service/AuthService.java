@@ -9,7 +9,10 @@ import com.example.nettalk.entity.member.Member;
 import com.example.nettalk.jwt.TokenProvider;
 import com.example.nettalk.entity.token.RefreshTokenRepository;
 import com.example.nettalk.entity.member.MemberRepository;
+import com.example.nettalk.vo.response.DefaultRes;
+import com.example.nettalk.vo.response.StatusCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -27,37 +30,34 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
-    public final static HashMap<String, Object> data = new HashMap<>();
+    public static final DefaultRes res = new DefaultRes<>(StatusCode.OK, "ok");
+    public static HashMap<String, Object> data = new HashMap<>();
 
     public boolean passwordck(String password, String passwordck) {
         if(password.equals(passwordck)) {
-            return true;
+            return false;
         }
-        return false;
+        return true;
     }
 
     @Transactional
     public MemberResponseDto signup(MemberRequestDto memberRequestDto) {
-        String message = "";
         try {
-            System.out.println("1");
             if(memberRepository.findByEmail(memberRequestDto.getEmail()).isPresent()) {
-                message = "이미 가입되어 있는 유저입니다";
-                throw new RuntimeException(message);
+                res.setResponseMessage("이미 가입되어 있는 유저입니다");
+                res.setStatusCode(StatusCode.CONFLICT);
+                throw new RuntimeException(res.getResponseMessage());
             }
-            System.out.println("2");
-
-            if(passwordck(memberRequestDto.getPassword(), memberRequestDto.getPassword())) {
-                message = "비밀번호가 다릅니다";
-                throw new RuntimeException(message);
+            else if(passwordck(memberRequestDto.getPassword(), memberRequestDto.getPasswordck())) {
+                res.setResponseMessage("비밀번호가 다릅니다");
+                res.setStatusCode(StatusCode.BAD_REQUEST);
+                throw new RuntimeException(res.getResponseMessage());
             }
-
+            res.setStatusCode(StatusCode.OK);
+            res.setResponseMessage("회원가입이 완료되었습니다");
             Member user = memberRequestDto.toMember(passwordEncoder);
             return MemberResponseDto.of(memberRepository.save(user));
         } catch(Exception e) {
-            if(!message.equals("")) {
-                AuthService.data.put("message", message);
-            }
             e.printStackTrace();
         }
         return null;

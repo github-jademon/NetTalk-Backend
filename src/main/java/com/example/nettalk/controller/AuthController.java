@@ -39,11 +39,11 @@ public class AuthController {
             }
 
             return new ResponseEntity(DefaultRes
-                    .res(StatusCode.OK, ResponseMessage.OK, authService.data), HttpStatus.OK);
+                    .res(authService.res.getStatusCode(), authService.res.getResponseMessage(), authService.data), HttpStatus.OK);
         } catch(Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(DefaultRes
-                    .res(StatusCode.INTERNAL_SERVER_ERROR, ResponseMessage.INTERNAL_SERVER_ERROR, authService.data), HttpStatus.OK);
+                    .res(authService.res.getStatusCode(), authService.res.getResponseMessage()), HttpStatus.OK);
         }
     }
 
@@ -53,14 +53,15 @@ public class AuthController {
             HttpHeaders headers= new HttpHeaders();
             headers.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
 
-            authService.data.put("data", authService.login(memberRequestDto));
-
+            authService.data.put("token", authService.login(memberRequestDto));
+//            authService.data.put("message", authService.message);
+//            new ResponseEntity<>()
             return new ResponseEntity(DefaultRes
-                    .res(StatusCode.OK, ResponseMessage.OK, authService.data), HttpStatus.OK);
+                    .res(StatusCode.OK, authService.res.getResponseMessage(), authService.data), HttpStatus.OK);
         } catch(Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(DefaultRes
-                    .res(StatusCode.INTERNAL_SERVER_ERROR, ResponseMessage.INTERNAL_SERVER_ERROR, authService.data), HttpStatus.OK);
+                    .res(authService.res.getStatusCode(), authService.res.getResponseMessage()), HttpStatus.OK);
         }
     }
 

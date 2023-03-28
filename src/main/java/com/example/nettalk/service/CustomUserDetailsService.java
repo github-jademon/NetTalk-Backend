@@ -21,18 +21,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     private final MemberRepository memberRepository;
 
     private UserDetails createUserDetails(Member member) {
-//        try {
-//
-//        } catch(Exception e) {
-//            e.printStackTrace();
-//        }
-//        return null;
-        System.out.println(member.getEmail());
-        System.out.println(member.getPassword());
-
         GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(member.getAuthority().toString());
-
-        System.out.println("0000"+grantedAuthority);
 
         User user = new User(
                 String.valueOf(member.getId()),
@@ -40,17 +29,17 @@ public class CustomUserDetailsService implements UserDetailsService {
                 Collections.singleton(grantedAuthority)
         );
 
-        System.out.println("1111"+user);
-        System.out.println("2222"+user.getPassword());
-
         return user;
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        System.out.println("!!!!!!!!!!"+username);
         return memberRepository.findByEmail(username)
                 .map(this::createUserDetails)
-                .orElseThrow(()->new UsernameNotFoundException("Username not found '"+ username + "'"));
+                .orElseThrow(()-> {
+                    AuthService.res.setResponseMessage("Username not found '"+ username + "'");
+                    new UsernameNotFoundException(AuthService.res.getResponseMessage());
+                    return null;
+                });
     }
 }
