@@ -1,6 +1,7 @@
 package com.example.nettalk.jwt;
 
 import com.example.nettalk.dto.token.TokenDto;
+import com.example.nettalk.service.AuthService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -70,7 +71,8 @@ public class TokenProvider {
         Claims claims = parseClaims(accessToken);
 
         if(claims.get(AUTHORITIES_KEY) == null) {
-            throw new RuntimeException("권한 정보가 없는 토큰입니다.");
+            AuthService.res.setResponseMessage("권한 정보가 없는 토큰입니다.");
+            throw new RuntimeException(AuthService.res.getResponseMessage());
         }
 
         Collection<? extends GrantedAuthority> authorities =
@@ -88,13 +90,17 @@ public class TokenProvider {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
-            log.info("잘못된 JWT 서명입니다.");
+            AuthService.res.setResponseMessage("잘못된 JWT 서명입니다.");
+            log.info(AuthService.res.getResponseMessage());
         } catch (ExpiredJwtException e) {
-            log.info("만료된 jWT 토큰입니다.");
+            AuthService.res.setResponseMessage("만료된 jWT 토큰입니다.");
+            log.info(AuthService.res.getResponseMessage());
         } catch (UnsupportedJwtException e) {
-            log.info("지원되지 않는 JWT 토큰입니다.");
+            AuthService.res.setResponseMessage("지원되지 않는 JWT 토큰입니다.");
+            log.info(AuthService.res.getResponseMessage());
         } catch(IllegalArgumentException e) {
-            log.info("JWT 토큰이 잘못되었습니다.");
+            AuthService.res.setResponseMessage("JWT 토큰이 잘못되었습니다.");
+            log.info(AuthService.res.getResponseMessage());
         }
         return false;
     }

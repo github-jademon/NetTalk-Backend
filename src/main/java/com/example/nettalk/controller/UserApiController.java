@@ -2,16 +2,20 @@ package com.example.nettalk.controller;
 
 import com.example.nettalk.dto.member.MemberResponseDto;
 import com.example.nettalk.config.SecurityUtil;
+import com.example.nettalk.service.AuthService;
 import com.example.nettalk.service.UserService;
 import com.example.nettalk.vo.duplicate.DuplicateVo;
 import com.example.nettalk.vo.response.DefaultRes;
 import com.example.nettalk.vo.response.ResponseMessage;
 import com.example.nettalk.vo.response.StatusCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.charset.Charset;
 import java.util.HashMap;
 
 @RestController
@@ -19,10 +23,20 @@ import java.util.HashMap;
 @RequestMapping("/api/user")
 public class UserApiController {
     private final UserService userService;
+    private final AuthService authService;
 
     @GetMapping("/me")
     public ResponseEntity<MemberResponseDto> findMemberInfoById() {
-        return ResponseEntity.ok(userService.findMemberInfoById(SecurityUtil.getCurrentUserId()));
+        try {
+            HttpHeaders headers= new HttpHeaders();
+            headers.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
+
+            return new ResponseEntity(DefaultRes
+                    .res(StatusCode.OK, authService.res.getResponseMessage(), userService.findMemberInfoById(SecurityUtil.getCurrentUserId())), HttpStatus.OK);
+        } catch(Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity(DefaultRes.res(StatusCode.INTERNAL_SERVER_ERROR, authService.res.getResponseMessage()), HttpStatus.OK);
+        }
     }
 
     @GetMapping("/exists")

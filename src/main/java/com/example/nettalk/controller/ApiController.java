@@ -3,6 +3,7 @@ package com.example.nettalk.controller;
 import com.example.nettalk.entity.room.Room;
 import com.example.nettalk.service.RoomService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +14,7 @@ import java.util.Optional;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
+@Log4j2
 public class ApiController {
     private final RoomService roomService;
 
@@ -43,6 +45,13 @@ public class ApiController {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.OK);
         }
+    }
+
+
+    @GetMapping("/chat")
+    public String chatGET() {
+        log.info("@ChatController, chat GET()");
+        return "chat";
     }
 
 }
