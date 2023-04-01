@@ -18,6 +18,8 @@ import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.util.*;
 
+// https://velog.io/@postlist/SpringBoot-WebSocket-만들기-React-채팅구현
+// todo : https://velog.io/@dldmswjd322/Spring-boot-React-STOMP로-실시간-채팅-구현하기-1-Spring-boot-서버-구현하기
 @Service
 @ServerEndpoint("/ws/chat")
 public class ChatHandler {
