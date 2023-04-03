@@ -22,4 +22,8 @@ public class RoomService {
     public Optional<Room> getRoom(Long id) {
         return roomRepository.findById(id);
     }
+
+    public void createRoom(Room room) {
+        roomRepository.save(room);
+    }
 }

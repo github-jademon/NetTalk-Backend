@@ -47,6 +47,17 @@ public class ApiController {
         }
     }
 
+    @PostMapping("/rooms")
+    public ResponseEntity create(@RequestBody Room room) {
+        try {
+            roomService.createRoom(room);
+            return new ResponseEntity(HttpStatus.OK);
+        } catch(Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 
     @GetMapping("/chat")
     public String chatGET() {
