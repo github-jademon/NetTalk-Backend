@@ -1,58 +1,47 @@
 package com.example.nettalk.hanlder;
 
+
 import lombok.extern.log4j.Log4j2;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
-import javax.websocket.OnClose;
-import javax.websocket.OnMessage;
-import javax.websocket.OnOpen;
-import javax.websocket.Session;
-import javax.websocket.server.ServerEndpoint;
-import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
-// https://velog.io/@postlist/SpringBoot-WebSocket-만들기-React-채팅구현
-// todo : https://velog.io/@dldmswjd322/Spring-boot-React-STOMP로-실시간-채팅-구현하기-1-Spring-boot-서버-구현하기
-@Service
-@ServerEndpoint("/ws/chat")
-public class ChatHandler {
-    private static Set<Session> clients = Collections.synchronizedSet(new HashSet<Session>());
-    private static Logger logger = LoggerFactory.getLogger(ChatHandler.class);
+@Component
+@Log4j2
+public class ChatHandler extends TextWebSocketHandler {
 
-    @OnOpen
-    public void onOpen(Session session) {
-        logger.info("open session : {}, clients={}", session.toString(), clients);
-        Map<String, List<String>> res = session.getRequestParameterMap();
-        logger.info("res={}", res);
+    private static List<WebSocketSession> list = new ArrayList<>();
 
-        if(!clients.contains(session)) {
-            clients.add(session);
-            logger.info("session open : {}", session);
-        }else{
-            logger.info("이미 연결된 session");
+    @Override
+    protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+        String payload = message.getPayload();
+        log.info("payload : " + payload);
+
+        for(WebSocketSession sess: list) {
+            sess.sendMessage(message);
         }
     }
 
-    @OnMessage
-    public void onMessage(String message, Session session) throws IOException {
-        logger.info("receive message : {}", message);
+    /* Client가 접속 시 호출되는 메서드 */
+    @Override
+    public void afterConnectionEstablished(WebSocketSession session) throws Exception {
 
-        for (Session s : clients) {
-            logger.info("send data : {}", message);
-            s.getBasicRemote().sendText(message);
-        }
+        list.add(session);
+
+        log.info(session + " 클라이언트 접속");
     }
 
-    @OnClose
-    public void onClose(Session session) {
-        logger.info("session close : {}", session);
-        clients.remove(session);
+    /* Client가 접속 해제 시 호출되는 메서드드 */
+
+    @Override
+    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+
+        log.info(session + " 클라이언트 접속 해제");
+        list.remove(session);
     }
 }
