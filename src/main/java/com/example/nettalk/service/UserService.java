@@ -43,7 +43,21 @@ public class UserService {
     }
 
     public Member getMember(Long userId) {
-        return memberRepository.findById(userId).get();
+        try {
+            return memberRepository.findById(userId).get();
+        } catch(Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public Member getEmailMember(String email) {
+        try {
+            return memberRepository.findByEmail(email).get();
+        } catch(Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
 }

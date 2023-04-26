@@ -35,6 +35,15 @@ public class RoomService {
         }
     }
 
+    public Room getRoom(Long roomId) {
+        try {
+            return roomRepository.findById(roomId).get();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public ResponseEntity getRoom(Long userId, Long roomId) {
         try {
             HashMap<String, Object> data = new HashMap<>();
@@ -82,21 +91,7 @@ public class RoomService {
         }
     }
 
-    public void updateUserRoom(Long id, MemberRoomUpdateRequestDto memberRoomUpdateRequestDto) {
-        try {
-            System.out.println(memberRoomUpdateRequestDto.getEmail());
 
-            Member member = memberRepository.findByEmail(memberRoomUpdateRequestDto.getEmail()).get();
-            Room room = roomRepository.findById(id).get();
-            UserRoom userRoom = userRoomRepository.findByMemberAndRoom(member, room).get();
-
-            System.out.println(memberRoomUpdateRequestDto.getName());
-
-            userRoom.setUsername(memberRoomUpdateRequestDto.getName());
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     public void addUserRoom(Member member, Room room, String name) {
         room.setUserCount(room.getUserCount()+1);

@@ -37,7 +37,7 @@ public class ApiController {
 
     @PostMapping("/rooms/{id}/name")
     public void updateUserRoom(@PathVariable("id") Long id, @RequestBody MemberRoomUpdateRequestDto memberRoomUpdateRequestDto) {
-        roomService.updateUserRoom(id, memberRoomUpdateRequestDto);
+        userRoomService.updateUserRoom(roomService.getRoom(id), userService.getEmailMember(memberRoomUpdateRequestDto.getEmail()), memberRoomUpdateRequestDto.getName());
     }
 
     @PostMapping("/rooms")

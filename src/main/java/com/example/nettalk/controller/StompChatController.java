@@ -19,8 +19,8 @@ import java.util.Map;
 @Controller
 @RequiredArgsConstructor
 public class StompChatController implements ChannelInterceptor {
-    private static final Map<String, Integer> sessions = new HashMap();
-    private final SimpMessagingTemplate template; //특정 Broker로 메세지를 전달
+    private static final Map<String, Integer> sessions = new HashMap<>();
+    private final SimpMessagingTemplate template;
     private final ChatMessageService chatMessageService;
 
     @MessageMapping(value = "/chat/enter")

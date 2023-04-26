@@ -1,5 +1,6 @@
 package com.example.nettalk.service;
 
+import com.example.nettalk.dto.memberRoom.MemberRoomUpdateRequestDto;
 import com.example.nettalk.entity.member.Member;
 import com.example.nettalk.entity.room.Room;
 import com.example.nettalk.entity.user_room.UserRoom;
@@ -30,6 +31,15 @@ public class UserRoomService {
         } catch(Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.OK);
+        }
+    }
+
+    public void updateUserRoom(Room room, Member member, String username) {
+        try {
+            UserRoom userRoom = userRoomRepository.findByMemberAndRoom(member, room).get();
+            userRoom.setUsername(username);
+        } catch(Exception e) {
+            e.printStackTrace();
         }
     }
 }
