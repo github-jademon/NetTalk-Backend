@@ -9,18 +9,21 @@ import com.example.nettalk.entity.member.Member;
 import com.example.nettalk.jwt.TokenProvider;
 import com.example.nettalk.entity.token.RefreshTokenRepository;
 import com.example.nettalk.entity.member.MemberRepository;
-import com.example.nettalk.vo.response.DefaultRes;
-import com.example.nettalk.vo.response.StatusCode;
+import com.example.nettalk.response.DefaultRes;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 
 import java.util.HashMap;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -30,55 +33,78 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
-    public static final DefaultRes res = new DefaultRes<>(StatusCode.OK, "ok");
+    public static final DefaultRes res = new DefaultRes<>(HttpStatus.OK, HttpStatus.OK.value(), "ok");
     public static HashMap<String, Object> data = new HashMap<>();
 
-    public boolean passwordck(String password, String passwordck) {
-        if(password.equals(passwordck)) {
-            return false;
-        }
-        return true;
+    public boolean passwordDuplicate(String password, String passwordCk) {
+        return password.equals(passwordCk);
     }
 
     @Transactional
-    public MemberResponseDto signup(MemberRequestDto memberRequestDto) {
+    public ResponseEntity signup(MemberRequestDto memberRequestDto, BindingResult errors) {
         try {
+            if(errors.hasErrors()) {
+                Map<String, String> validatorResult = new HashMap<>();
+
+                for (FieldError error : errors.getFieldErrors()) {
+                    String validKeyName = String.format("valid_%s", error.getField());
+                    validatorResult.put(validKeyName, error.getDefaultMessage());
+                }
+
+                return new ResponseEntity(validatorResult, HttpStatus.OK);
+            }
+
             if(memberRepository.findByEmail(memberRequestDto.getEmail()).isPresent()) {
                 res.setResponseMessage("이미 가입되어 있는 유저입니다");
-                res.setStatusCode(StatusCode.CONFLICT);
                 throw new RuntimeException(res.getResponseMessage());
             }
-            else if(passwordck(memberRequestDto.getPassword(), memberRequestDto.getPasswordck())) {
+            else if(!passwordDuplicate(memberRequestDto.getPassword(), memberRequestDto.getPasswordck())) {
                 res.setResponseMessage("비밀번호가 다릅니다");
-                res.setStatusCode(StatusCode.BAD_REQUEST);
                 throw new RuntimeException(res.getResponseMessage());
             }
-            res.setStatusCode(StatusCode.OK);
+
             res.setResponseMessage("회원가입이 완료되었습니다");
             Member user = memberRequestDto.toMember(passwordEncoder);
-            return MemberResponseDto.of(memberRepository.save(user));
+
+            data.put("data", MemberResponseDto.of(memberRepository.save(user)));
+
+            DefaultRes response = DefaultRes.res(HttpStatus.OK, HttpStatus.OK.value(), res.getResponseMessage(), data);
+
+            return new ResponseEntity(response, response.getHttpStatus());
+
         } catch(Exception e) {
             e.printStackTrace();
+            DefaultRes response = DefaultRes.res(HttpStatus.OK, HttpStatus.OK.value(), res.getResponseMessage());
+            return new ResponseEntity(response, response.getHttpStatus());
         }
-        return null;
     }
 
     @Transactional
-    public TokenDto login(MemberRequestDto memberRequestDto) {
-        UsernamePasswordAuthenticationToken authenticationToken = memberRequestDto.toAuthentication();
+    public ResponseEntity login(MemberRequestDto memberRequestDto) {
+        try {
+            UsernamePasswordAuthenticationToken authenticationToken = memberRequestDto.toAuthentication();
 
-        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+            Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
-        TokenDto tokenDto = tokenProvider.generateTokenDto(authentication);
+            TokenDto tokenDto = tokenProvider.generateTokenDto(authentication);
 
-        RefreshToken refreshToken = RefreshToken.builder()
-                .key(authentication.getName())
-                .value(tokenDto.getRefreshToken())
-                .build();
+            RefreshToken refreshToken = RefreshToken.builder()
+                    .key(authentication.getName())
+                    .value(tokenDto.getRefreshToken())
+                    .build();
 
-        refreshTokenRepository.save(refreshToken);
+            refreshTokenRepository.save(refreshToken);
 
-        return tokenDto;
+            data.put("token", tokenDto);
+
+            DefaultRes response = DefaultRes.res(HttpStatus.OK, HttpStatus.OK.value(), res.getResponseMessage(), data);
+            return new ResponseEntity(response, response.getHttpStatus());
+        } catch(Exception e) {
+            e.printStackTrace();
+
+            DefaultRes response = DefaultRes.res(HttpStatus.OK, HttpStatus.OK.value(), res.getResponseMessage());
+            return new ResponseEntity(response, response.getHttpStatus());
+        }
     }
 
     @Transactional

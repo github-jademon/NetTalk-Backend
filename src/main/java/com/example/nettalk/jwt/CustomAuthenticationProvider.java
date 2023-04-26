@@ -2,8 +2,8 @@ package com.example.nettalk.jwt;
 
 import com.example.nettalk.service.AuthService;
 import com.example.nettalk.service.CustomUserDetailsService;
-import com.example.nettalk.vo.response.StatusCode;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,7 +15,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
     private final CustomUserDetailsService customUserDetailsService;
     @Override
     public Authentication authenticate(Authentication authentication) {
-        AuthService.res.setStatusCode(StatusCode.INTERNAL_SERVER_ERROR);
+        AuthService.res.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
         AuthService.res.setResponseMessage("OK");
         try {
             if(authentication == null){
@@ -48,7 +48,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
             }
             /* 실질적인 인증 */
             if(!passwordEncoder.matches(password, loadedUser.getPassword())){
-                AuthService.res.setStatusCode(StatusCode.BAD_REQUEST);
+                AuthService.res.setStatusCode(HttpStatus.BAD_REQUEST.value());
                 AuthService.res.setResponseMessage("Password does not match stored value");
                 throw new BadCredentialsException(AuthService.res.getResponseMessage());
             }
@@ -58,7 +58,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                 throw new CredentialsExpiredException(AuthService.res.getResponseMessage());
             }
             /* 인증 완료 */
-            AuthService.res.setStatusCode(StatusCode.OK);
+            AuthService.res.setStatusCode(HttpStatus.OK.value());
             UsernamePasswordAuthenticationToken result = new UsernamePasswordAuthenticationToken(loadedUser, null, loadedUser.getAuthorities());
             result.setDetails(authentication.getDetails());
             return result;

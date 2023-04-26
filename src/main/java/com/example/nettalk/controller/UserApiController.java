@@ -5,9 +5,7 @@ import com.example.nettalk.config.SecurityUtil;
 import com.example.nettalk.service.AuthService;
 import com.example.nettalk.service.UserService;
 import com.example.nettalk.vo.duplicate.DuplicateVo;
-import com.example.nettalk.vo.response.DefaultRes;
-import com.example.nettalk.vo.response.ResponseMessage;
-import com.example.nettalk.vo.response.StatusCode;
+import com.example.nettalk.response.DefaultRes;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -31,11 +29,14 @@ public class UserApiController {
             HttpHeaders headers= new HttpHeaders();
             headers.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
 
-            return new ResponseEntity(DefaultRes
-                    .res(StatusCode.OK, authService.res.getResponseMessage(), userService.findMemberInfoById(SecurityUtil.getCurrentUserId())), HttpStatus.OK);
+            DefaultRes ress = DefaultRes.res(HttpStatus.OK, HttpStatus.OK.value(), authService.res.getResponseMessage(), userService.findMemberInfoById(SecurityUtil.getCurrentUserId()));
+
+            return new ResponseEntity(ress, ress.getHttpStatus());
         } catch(Exception e) {
             e.printStackTrace();
-            return new ResponseEntity(DefaultRes.res(StatusCode.INTERNAL_SERVER_ERROR, authService.res.getResponseMessage()), HttpStatus.OK);
+            DefaultRes ress = DefaultRes.res(HttpStatus.INTERNAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR.value(), authService.res.getResponseMessage());
+
+            return new ResponseEntity(ress, ress.getHttpStatus());
         }
     }
 
@@ -52,12 +53,13 @@ public class UserApiController {
         } else if (type.equals("email")) {
             hashMap.put("check", userService.findMemberInfoByEmail(data));
         } else {
-            return new ResponseEntity(DefaultRes
-                    .res(StatusCode.METHOD_NOT_ALLOWED, ResponseMessage.METHOD_NOT_ALLOWED), HttpStatus.METHOD_NOT_ALLOWED);
-        }
+            DefaultRes ress = DefaultRes.res(HttpStatus.METHOD_NOT_ALLOWED, HttpStatus.METHOD_NOT_ALLOWED.value(), HttpStatus.METHOD_NOT_ALLOWED.name());
 
-        return new ResponseEntity(DefaultRes
-                .res(StatusCode.OK, ResponseMessage.OK, hashMap), HttpStatus.OK);
+            return new ResponseEntity(ress, ress.getHttpStatus());
+        }
+        DefaultRes ress = DefaultRes.res(HttpStatus.OK, HttpStatus.OK.value(), HttpStatus.OK.name(), hashMap);
+
+        return new ResponseEntity(ress, ress.getHttpStatus());
     }
 
 }
