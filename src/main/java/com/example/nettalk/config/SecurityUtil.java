@@ -15,6 +15,12 @@ public class SecurityUtil {
             throw new RuntimeException("Security Context에 인증 정보가 없습니다.");
         }
 
+        log.info("name: {}", authentication.getName());
+
+        if (authentication.getName().equals("anonymousUsers")||authentication.getName().equals("anonymousUser")) {
+            return null;
+        }
+
         return Long.parseLong(authentication.getName());
     }
 }

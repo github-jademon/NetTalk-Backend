@@ -24,11 +24,8 @@ import java.util.stream.Collectors;
 @Slf4j
 @Component
 public class TokenProvider {
-    private static final String AUTHORITIES_KEY = "auth";
-    private static final String BEARER_TYPE = "bearer";
     private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000*60*30; // 30분
     private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000*60*60*24*7; // 7일
-
     private final Key key;
 
     public TokenProvider(@Value("${jwt.secret}") String secretKey) {
@@ -49,7 +46,7 @@ public class TokenProvider {
 
         String accessToken = Jwts.builder()
                 .setSubject(authentication.getName())
-                .claim(AUTHORITIES_KEY, authorities)
+                .claim(JwtProperties.AUTHORITIES_KEY, authorities)
                 .setExpiration(accessTokenExpiresIn)
                 .signWith(SignatureAlgorithm.HS512, key)
                 .compact();
@@ -60,7 +57,7 @@ public class TokenProvider {
                 .compact();
 
         return TokenDto.builder()
-                .grantType(BEARER_TYPE)
+                .grantType(JwtProperties.BEARER_TYPE)
                 .accessToken(accessToken)
                 .accessTokenExpiresIn(accessTokenExpiresIn.getTime())
                 .refreshToken(refreshToken)
@@ -70,13 +67,13 @@ public class TokenProvider {
     public Authentication getAuthentication(String accessToken) {
         Claims claims = parseClaims(accessToken);
 
-        if(claims.get(AUTHORITIES_KEY) == null) {
+        if(claims.get(JwtProperties.AUTHORITIES_KEY) == null) {
             AuthService.res.setResponseMessage("권한 정보가 없는 토큰입니다.");
             throw new RuntimeException(AuthService.res.getResponseMessage());
         }
 
         Collection<? extends GrantedAuthority> authorities =
-                Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
+                Arrays.stream(claims.get(JwtProperties.AUTHORITIES_KEY).toString().split(","))
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
 
