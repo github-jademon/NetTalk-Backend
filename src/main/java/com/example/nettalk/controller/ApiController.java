@@ -32,7 +32,7 @@ public class ApiController {
 
     @GetMapping("/rooms/{id}")
     public ResponseEntity LoadList(@PathVariable("id") Long id) {
-        return roomService.getRoom(SecurityUtil.getCurrentUserId(), id);
+        return userRoomService.getRoom(roomService.getRoom(id), userService.getMember(SecurityUtil.getCurrentUserId()));
     }
 
     @PostMapping("/rooms/{id}/name")
@@ -42,7 +42,7 @@ public class ApiController {
 
     @PostMapping("/rooms")
     public ResponseEntity create(@RequestBody Room room) {
-        return roomService.createRoom(SecurityUtil.getCurrentUserId(), room);
+        return userRoomService.createRoom(userService.getMember(SecurityUtil.getCurrentUserId()), room);
     }
 
 }
