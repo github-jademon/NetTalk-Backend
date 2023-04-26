@@ -25,15 +25,15 @@ public class StompChatController implements ChannelInterceptor {
 
     @MessageMapping(value = "/chat/enter")
     public void enter(ChatMessageDto message){
-        message.setMessage(message.getName() + "님이 채팅방에 참여하였습니다.");
-        template.convertAndSend("/sub/chat/room/" + message.getRoomId(), message);
-        chatMessageService.save(message.getRoomId(), message.toChatMessage(), "system");
+        message.setMessage(message.getUsername() + "님이 채팅방에 참여하였습니다.");
+        template.convertAndSend("/sub/chat/room/" + message.getId(), message);
+        chatMessageService.save(message.getId(), message.toChatMessage(), "system");
     }
 
     @MessageMapping(value = "/chat/message")
     public void message(ChatMessageDto message){
-        template.convertAndSend("/sub/chat/room/" + message.getRoomId(), message);
-        chatMessageService.save(message.getRoomId(), message.toChatMessage(), "user");
+        template.convertAndSend("/sub/chat/room/" + message.getId(), message);
+        chatMessageService.save(message.getId(), message.toChatMessage(), "user");
     }
 
     @EventListener(SessionConnectEvent.class)
