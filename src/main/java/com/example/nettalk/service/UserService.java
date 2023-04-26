@@ -1,15 +1,30 @@
 package com.example.nettalk.service;
+
 import com.example.nettalk.dto.member.MemberResponseDto;
+import com.example.nettalk.entity.chat.ChatMessage;
+import com.example.nettalk.entity.member.Member;
 import com.example.nettalk.entity.member.MemberRepository;
+import com.example.nettalk.entity.room.Room;
+import com.example.nettalk.entity.room.RoomRepository;
+import com.example.nettalk.entity.user_room.UserRoom;
+import com.example.nettalk.entity.user_room.UserRoomRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Transactional(readOnly = true)
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+@Transactional
 @Service
 @RequiredArgsConstructor
 public class UserService {
     private final MemberRepository memberRepository;
+    private final UserRoomRepository userRoomRepository;
+
     public MemberResponseDto findMemberInfoById(Long userId) {
         return memberRepository.findById(userId)
                 .map(MemberResponseDto::of)
@@ -26,6 +41,23 @@ public class UserService {
         return memberRepository.findByUserid(userid)
                 .map(MemberResponseDto::of)
                 .orElseThrow(() -> new RuntimeException("유저 정보가 없습니다."));
+    }
+
+    public ResponseEntity mypage(Long userId) {
+        try {
+            Member member = memberRepository.findById(userId).get();
+            List<UserRoom> userRooms = userRoomRepository.findAllByMember(member);
+            List<Room> data = new ArrayList<>();
+
+            for(UserRoom room:userRooms) {
+                data.add(room.getRoom());
+            }
+
+            return new ResponseEntity(data, HttpStatus.OK);
+        } catch(Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
     }
 
 }
