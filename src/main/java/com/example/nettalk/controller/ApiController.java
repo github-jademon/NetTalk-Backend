@@ -4,6 +4,7 @@ import com.example.nettalk.config.SecurityUtil;
 import com.example.nettalk.dto.memberRoom.MemberRoomUpdateRequestDto;
 import com.example.nettalk.entity.room.Room;
 import com.example.nettalk.service.RoomService;
+import com.example.nettalk.service.UserRoomService;
 import com.example.nettalk.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -17,10 +18,11 @@ import org.springframework.web.bind.annotation.*;
 public class ApiController {
     private final RoomService roomService;
     private final UserService userService;
+    private final UserRoomService userRoomService;
 
     @GetMapping("/mypage")
     public ResponseEntity Mypage() {
-        return userService.mypage(SecurityUtil.getCurrentUserId());
+        return userRoomService.mypage(userService.getMember(SecurityUtil.getCurrentUserId()));
     }
 
     @GetMapping("/rooms")

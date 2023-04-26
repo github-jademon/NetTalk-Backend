@@ -23,7 +23,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserService {
     private final MemberRepository memberRepository;
-    private final UserRoomRepository userRoomRepository;
 
     public MemberResponseDto findMemberInfoById(Long userId) {
         return memberRepository.findById(userId)
@@ -43,21 +42,8 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("유저 정보가 없습니다."));
     }
 
-    public ResponseEntity mypage(Long userId) {
-        try {
-            Member member = memberRepository.findById(userId).get();
-            List<UserRoom> userRooms = userRoomRepository.findAllByMember(member);
-            List<Room> data = new ArrayList<>();
-
-            for(UserRoom room:userRooms) {
-                data.add(room.getRoom());
-            }
-
-            return new ResponseEntity(data, HttpStatus.OK);
-        } catch(Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
+    public Member getMember(Long userId) {
+        return memberRepository.findById(userId).get();
     }
 
 }
