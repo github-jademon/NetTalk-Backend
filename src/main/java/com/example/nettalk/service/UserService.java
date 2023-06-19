@@ -44,6 +44,7 @@ public class UserService {
 
     public Member getMember(Long userId) {
         try {
+            if(userId==null) throw new Exception();
             return memberRepository.findById(userId).get();
         } catch(Exception e) {
             e.printStackTrace();

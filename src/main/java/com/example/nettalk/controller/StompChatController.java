@@ -15,6 +15,8 @@ import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 @Controller
 @RequiredArgsConstructor
@@ -26,14 +28,27 @@ public class StompChatController implements ChannelInterceptor {
     @MessageMapping(value = "/chat/enter")
     public void enter(ChatMessageDto message){
         message.setMessage(message.getUsername() + "님이 채팅방에 참여하였습니다.");
-        template.convertAndSend("/sub/chat/room/" + message.getId(), message);
-        chatMessageService.save(message.getId(), message.toChatMessage(), "system");
+        template.convertAndSend("/sub/chat/room/" + message.getRoomId(), message);
+        chatMessageService.save(message.getRoomId(), message.toChatMessage(), "system");
+    }
+
+    @MessageMapping(value = "/chat/exit")
+    public void exit(ChatMessageDto message){
+        message.setMessage(message.getUsername() + "님이 퇴장하셨습니다.");
+        template.convertAndSend("/sub/chat/room/" + message.getRoomId(), message);
+        chatMessageService.save(message.getRoomId(), message.toChatMessage(), "system");
     }
 
     @MessageMapping(value = "/chat/message")
     public void message(ChatMessageDto message){
-        template.convertAndSend("/sub/chat/room/" + message.getId(), message);
-        chatMessageService.save(message.getId(), message.toChatMessage(), "user");
+        System.out.println("message: "+ message.getRoomId());
+        template.convertAndSend("/sub/chat/room/" + message.getRoomId(), message);
+        chatMessageService.save(message.getRoomId(), message.toChatMessage(), "user");
+        System.out.println("sessions: ");
+        Set<String> s = sessions.keySet();
+        for(String i:s) {
+            System.out.println(sessions.get(i)+" "+i);
+        }
     }
 
     @EventListener(SessionConnectEvent.class)
@@ -41,14 +56,17 @@ public class StompChatController implements ChannelInterceptor {
         try {
             MessageHeaders messageHeaders = event.getMessage().getHeaders();
             System.out.println(messageHeaders);
+            String sessionId = messageHeaders.get("simpSessionId").toString();
             if(messageHeaders.get("nativeHeaders").toString().contains(JwtProperties.BEARER_PREFIX)) {
-                String sessionId = messageHeaders.get("simpSessionId").toString();
                 String userId = messageHeaders.get("nativeHeaders").toString().split("User=\\[")[1].split("]")[0];
 
                 sessions.put(sessionId, Integer.valueOf(userId));
 
-                System.out.println(sessions.toString());
+//                System.out.println(sessions.toString());
+            } else {
+                sessions.put(sessionId, 0);
             }
+            System.out.println("??????????????????????????????????????????"+sessionId);
         } catch(Exception e) {
             e.printStackTrace();
         }

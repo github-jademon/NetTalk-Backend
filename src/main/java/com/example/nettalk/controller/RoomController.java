@@ -2,7 +2,7 @@ package com.example.nettalk.controller;
 
 import com.example.nettalk.config.SecurityUtil;
 import com.example.nettalk.dto.memberRoom.MemberRoomUpdateRequestDto;
-import com.example.nettalk.entity.room.Room;
+import com.example.nettalk.dto.room.RoomRequestDto;
 import com.example.nettalk.service.RoomService;
 import com.example.nettalk.service.UserRoomService;
 import com.example.nettalk.service.UserService;
@@ -15,24 +15,29 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/api")
 @Log4j2
-public class ApiController {
+public class RoomController {
     private final RoomService roomService;
     private final UserService userService;
     private final UserRoomService userRoomService;
 
     @GetMapping("/mypage")
-    public ResponseEntity Mypage() {
+    public ResponseEntity mypage() {
         return userRoomService.mypage(userService.getMember(SecurityUtil.getCurrentUserId()));
     }
 
     @GetMapping("/rooms")
-    public ResponseEntity LoadList() {
+    public ResponseEntity loadList() {
         return roomService.list();
     }
 
     @GetMapping("/rooms/{id}")
-    public ResponseEntity LoadList(@PathVariable("id") Long id) {
+    public ResponseEntity load(@PathVariable("id") Long id) {
         return userRoomService.getRoom(roomService.getRoom(id), userService.getMember(SecurityUtil.getCurrentUserId()));
+    }
+
+    @DeleteMapping("/rooms/{id}")
+    public ResponseEntity delete(@PathVariable("id") Long id) {
+        return userRoomService.deleteRoom(roomService.getRoom(id), userService.getMember(SecurityUtil.getCurrentUserId()));
     }
 
     @PostMapping("/rooms/{id}/name")
@@ -41,8 +46,8 @@ public class ApiController {
     }
 
     @PostMapping("/rooms")
-    public ResponseEntity create(@RequestBody Room room) {
-        return userRoomService.createRoom(userService.getMember(SecurityUtil.getCurrentUserId()), room);
+    public ResponseEntity create(@RequestBody RoomRequestDto room) {
+        return userRoomService.createRoom(userService.getMember(SecurityUtil.getCurrentUserId()), room.getRoom(), room.getUsername());
     }
 
 }

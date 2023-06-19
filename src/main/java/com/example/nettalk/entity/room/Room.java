@@ -34,26 +34,18 @@ public class Room {
     @NotBlank(message = "방 소개를 입력해주세요.")
     private String comment;
 
-    @Column(name = "user_count")
-    private int userCount;
-
-    @Column(name = "max_count")
-//    @NotBlank(message = "최대 인원을 입력해주세요.")
-    private int maxCount;
-
-    @OneToMany(mappedBy = "room")
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
     private List<UserRoom> member;
 
-    @OneToMany
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
     private List<ChatMessage> chatMessages;
 
     @Builder
-    public Room(Member owner, String title, String comment, int maxCount) {
+    public Room(Member owner, String title, String comment, List<ChatMessage> chatMessages) {
         this.owner = owner;
         this.title = title;
         this.comment = comment;
-        this.userCount = 1;
-        this.maxCount = maxCount;
+        this.chatMessages = chatMessages;
     }
 
 }

@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 public class ChatMessageDto {
 
-    private Long id;
+    private Long roomId;
     private String type;
     private String username;
     private String uuid;

@@ -1,13 +1,7 @@
 package com.example.nettalk.service;
 
-import com.example.nettalk.dto.memberRoom.MemberRoomUpdateRequestDto;
-import com.example.nettalk.entity.chat.ChatMessage;
-import com.example.nettalk.entity.member.Member;
-import com.example.nettalk.entity.member.MemberRepository;
 import com.example.nettalk.entity.room.Room;
 import com.example.nettalk.entity.room.RoomRepository;
-import com.example.nettalk.entity.user_room.UserRoom;
-import com.example.nettalk.entity.user_room.UserRoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,6 +33,16 @@ public class RoomService {
         } catch (Exception e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+    public boolean delete(Room room) {
+        try {
+            roomRepository.delete(room);
+            return true;
+        } catch(Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 

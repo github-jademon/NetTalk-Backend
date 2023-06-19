@@ -31,6 +31,14 @@ public class UserRoom {
     private LocalDateTime joinAt;
 
     @Builder
+    public UserRoom(Room room, Member member, String username, LocalDateTime joinAt) {
+        this.room = room;
+        this.member = member;
+        this.username = username;
+        this.joinAt = joinAt;
+    }
+
+    @Builder
     public UserRoom(Room room, Member member, String username) {
         this.room = room;
         this.member = member;
